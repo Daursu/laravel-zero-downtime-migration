@@ -22,6 +22,21 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->statement($query);
     }
 
+    public function testItExtractsTableNameWhenQuotesAreMissing()
+    {
+        $query = 'ALTER TABLE users CHANGE name name VARCHAR(50) NOT NULL';
+        $connection = $this->getConnectionWithMockedProcess();
+
+        $connection->expects($this->once())
+            ->method('runProcess')
+            ->with($this->callback(function ($command) {
+                return str_contains(implode(' ', $command), 't=users');
+            }))
+            ->willReturn(0);
+
+        $connection->statement($query);
+    }
+
     public function testItGeneratesTheAuthString()
     {
         $query = 'alter table `users` ADD `email` varchar(255)';

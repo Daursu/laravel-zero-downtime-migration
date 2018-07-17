@@ -71,7 +71,7 @@ class PtOnlineSchemaChangeConnection extends MySqlConnection
      */
     protected function extractTableFromQuery(string $query): string
     {
-        preg_match('/table `(.*?)`/', $query, $matches);
+        preg_match('/table `?(.*?)`?\s/i', $query, $matches);
 
         return array_get($matches, '1');
     }
@@ -85,7 +85,7 @@ class PtOnlineSchemaChangeConnection extends MySqlConnection
     protected function cleanQuery(string $query): string
     {
         $table = $this->extractTableFromQuery($query);
-        $pos = strpos($query, $table.'`');
+        $pos = strpos($query, $table);
 
         return trim(substr($query, $pos + strlen($table) + 1));
     }
