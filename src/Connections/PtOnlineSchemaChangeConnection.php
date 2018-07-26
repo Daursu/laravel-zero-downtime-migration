@@ -41,6 +41,7 @@ class PtOnlineSchemaChangeConnection extends MySqlConnection
     public function runProcess(array $command): int
     {
         $process = new Process($command);
+        $process->setTimeout(null);
         $process->mustRun();
 
         return $process->stop();
