@@ -20,7 +20,7 @@ Daursu\ZeroDowntimeMigration\ServiceProvider::class,
 3. Update your `config/database.php` and add a new connection:
 ```
 'connections' => [
-    'pt-online-schema-change' => [
+    'zero-downtime' => [
         'driver' => 'pt-online-schema-change',
         
         // This is your master write access database connection details
@@ -43,14 +43,15 @@ Daursu\ZeroDowntimeMigration\ServiceProvider::class,
 ```
 
 ## Usage
-When writing a new migration, specify the `pt-online-schema-change` connection to use, and all your commands will run through `pt-online-schema-change`.
+When writing a new migration, use the helper facade `ZeroDowntimeSchema` instead of Laravel's `Schema`, 
+and all your commands will run through `pt-online-schema-change`.
 
 ```
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Daursu\ZeroDowntimeMigration\ZeroDowntimeSchema;
 
 class AddPhoneNumberToUsersTable extends Migration
 {
@@ -61,7 +62,7 @@ class AddPhoneNumberToUsersTable extends Migration
      */
     public function up()
     {
-        Schema::connection('pt-online-schema-change')->table('users', function (Blueprint $table) {
+        ZeroDowntimeSchema::table('users', function (Blueprint $table) {
             $table->string('phone_number')->nullable();
         });
     }
@@ -73,7 +74,7 @@ class AddPhoneNumberToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::connection('pt-online-schema-change')->table('users', function (Blueprint $table) {
+        ZeroDowntimeSchema::table('users', function (Blueprint $table) {
             $table->dropColumn('phone-number');
         });
     }
@@ -84,7 +85,8 @@ Run `php artisan:migrate`
 
 ## Configuration
 All the configuration is done inside `config/database.php` on the connection itself.
-You can pass down custom flags to the raw `pt-online-schema-change` command. Simply add the parameters you want inside the `options` array like so:
+You can pass down custom flags to the raw `pt-online-schema-change` command. 
+Simply add the parameters you want inside the `options` array like so:
 ```
 'options' => [
     '--nocheck-replication-filters',
@@ -97,8 +99,39 @@ You can pass down custom flags to the raw `pt-online-schema-change` command. Sim
 You can find all the possible options here:
 https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html
 
+### Tests
+The `ZeroDowntimeSchema` facades allows you disable running pt-online-schema-change during tests.
+To do so, in your base test case `TestCase.php` under the setUp method add the following:
+
+```php
+public function setUp()
+{
+   // ... existing code
+   ZeroDowntimeSchema::disable();
+}
+```
+
+This will disable `pt-online-schema-change` and all the migrations using the helper facade will run
+through the default laravel migrator.
+
+### Custom connection name
+
+By default, the connection name used by `ZeroDowntimeSchema` helper is set to `zero-downtime`, however you can
+override this if you called your connection something else in `config/database.php`.
+
+To do so, in your `AppServiceProvider.php` add the following under the `boot()` method:
+
+```php
+public function boot()
+{
+    // ... existing code
+    ZeroDowntimeSchema::$connection = 'your-custom-name';
+}
+```
+
 ### Replication
-If your database is running in a cluster with replication, then you need to configure how `pt-online-schema-changes` finds your replica slaves.
+If your database is running in a cluster with replication, then you need to 
+configure how `pt-online-schema-changes` finds your replica slaves.
 Here's an example setup, but feel free to customize it to your own needs
 
 ```
