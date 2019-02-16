@@ -108,7 +108,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $query = 'alter table `users` ADD `email` varchar(255)';
         $connection = $this->getConnectionWithMockedProcess();
 
-        $connection->method('pretending')->willReturn(true);
+        $connection->method('isPretending')->willReturn(true);
 
         $connection->expects($this->once())
             ->method('runProcess')
@@ -133,7 +133,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
                 '',
                 $config,
             ])
-            ->setMethods(['runProcess', 'pretending'])
+            ->setMethods(['runProcess', 'isPretending'])
             ->getMock();
 
         return $mock;
