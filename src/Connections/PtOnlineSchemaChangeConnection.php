@@ -21,7 +21,7 @@ class PtOnlineSchemaChangeConnection extends MySqlConnection
         return $this->runProcess(array_merge(
             [
                 'pt-online-schema-change',
-                '--execute',
+                $this->pretending() ? '--dry-run' : '--execute',
             ],
             array_get($this->config, 'options', []),
             [

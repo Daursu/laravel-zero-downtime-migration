@@ -103,6 +103,26 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->statement($query);
     }
 
+    public function testItAppliesDryRunWhenPretending()
+    {
+        $query = 'alter table `users` ADD `email` varchar(255)';
+        $connection = $this->getConnectionWithMockedProcess();
+
+        $connection->method('pretending')->willReturn(true);
+
+        $connection->expects($this->once())
+            ->method('runProcess')
+            ->with($this->callback(function ($command) {
+                return str_contains(
+                    implode(' ', $command),
+                    '--dry-run'
+                );
+            }))
+            ->willReturn(0);
+
+        $connection->statement($query);
+    }
+
     private function getConnectionWithMockedProcess(array $config = [])
     {
         $mock = $this->getMockBuilder(PtOnlineSchemaChangeConnection::class)
@@ -113,7 +133,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
                 '',
                 $config,
             ])
-            ->setMethods(['runProcess'])
+            ->setMethods(['runProcess', 'pretending'])
             ->getMock();
 
         return $mock;
