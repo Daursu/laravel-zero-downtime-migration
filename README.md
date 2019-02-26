@@ -4,7 +4,7 @@ Zero downtime migrations with Laravel and `pt-online-schema-change`
 NOTE: works only with MySQL databases, including (Percona & MariaDB).
 
 ## Installation
-Compatible with Laravel `5.5`, `5.6` & `5.7`.
+Compatible with Laravel `5.5`, `5.6`, `5.7` & `5.8`.
 
 #### Prerequisites
 Make sure you have `percona-toolkit` installed.
