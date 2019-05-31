@@ -19,6 +19,9 @@ abstract class BaseConnection extends MySqlConnection
      */
     public function runProcess(array $command): int
     {
+        // Strip empty lines
+        $command = array_filter($command);
+        
         $this->outputCommand($command);
 
         $process = new Process($command);

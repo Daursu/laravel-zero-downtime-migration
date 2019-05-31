@@ -20,17 +20,17 @@ class GhostConnection extends BaseConnection
         return $this->runProcess(array_merge(
             [
                 'gh-ost',
-                $this->isPretending() ? '' : '--execute',
             ],
             Arr::get($this->config, 'options', []),
             [
-                sprintf('--user="%s"', $this->getConfig('username')),
-                sprintf('--password="%s"', $this->getConfig('password')),
-                sprintf('--host="%s"', $this->getConfig('host')),
-                sprintf('--port="%s"', $this->getConfig('port')),
-                sprintf('--database="%s"', $this->getConfig('database')),
-                sprintf('--table="%s"', $table),
-                sprintf('--alter="%s"', $this->cleanQuery($query)),
+                sprintf('--user=%s', $this->getConfig('username')),
+                sprintf('--password=%s', $this->getConfig('password')),
+                sprintf('--host=%s', $this->getConfig('host')),
+                sprintf('--port=%d', $this->getConfig('port')),
+                sprintf('--database=%s', $this->getConfig('database')),
+                sprintf('--table=%s', $table),
+                sprintf('--alter=%s', $this->cleanQuery($query)),
+                $this->isPretending() ? '' : '--execute',
             ]
         ));
     }
