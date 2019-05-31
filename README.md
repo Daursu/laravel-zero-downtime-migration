@@ -1,5 +1,5 @@
 # laravel-zero-downtime-migration
-Zero downtime migrations with Laravel and `pt-online-schema-change`
+Zero downtime migrations with Laravel and `gh-ost` or `pt-online-schema-change`.
 
 NOTE: works only with MySQL databases, including (Percona & MariaDB).
 
@@ -7,7 +7,10 @@ NOTE: works only with MySQL databases, including (Percona & MariaDB).
 Compatible with Laravel `5.5`, `5.6`, `5.7` & `5.8`.
 
 #### Prerequisites
-Make sure you have `percona-toolkit` installed.
+If you are using `gh-ost` then make sure you download the binary from their releases page:
+- https://github.com/github/gh-ost/releases
+
+If you are using `pt-online-schema-change` then make sure you have `percona-toolkit` installed.
 - On Mac you can install it using brew `brew install percona-toolkit`.
 - On Debian/Ubuntu ` apt-get install percona-toolkit`.
 
@@ -18,6 +21,41 @@ Make sure you have `percona-toolkit` installed.
 Daursu\ZeroDowntimeMigration\ServiceProvider::class,
 ```
 3. Update your `config/database.php` and add a new connection:
+
+This package support `pt-onlice-schema-change` and `gh-ost`. Below are the configurations for each package:
+
+###### gh-ost
+```php
+'connections' => [
+    'zero-downtime' => [
+        'driver' => 'gh-ost',
+        
+        // This is your master write access database connection details
+        'host' => env('DB_HOST', '127.0.0.1'),
+        'port' => env('DB_PORT', '3306'),
+        'database' => env('DB_DATABASE', 'forge'),
+        'username' => env('DB_USERNAME', 'forge'),
+        'password' => env('DB_PASSWORD', ''),
+        
+        // Additional options, depending on your setup
+        // all options available here: https://github.com/github/gh-ost/blob/master/doc/cheatsheet.md
+        'options' => [
+            '--max-load=Threads_running=25',
+            '--critical-load=Threads_running=1000',
+            '--chunk-size=1000',
+            '--throttle-control-replicas=myreplica.1.com,myreplica.2.com',
+            '--max-lag-millis=1500',
+            '--verbose',
+            '--switch-to-rbr',
+            '--exact-rowcount',
+            '--concurrent-rowcount',
+            '--default-retries=120',
+        ],
+    ],
+],
+```
+
+###### pt-online-schema-change
 ```php
 'connections' => [
     'zero-downtime' => [
@@ -44,7 +82,7 @@ Daursu\ZeroDowntimeMigration\ServiceProvider::class,
 
 ## Usage
 When writing a new migration, use the helper facade `ZeroDowntimeSchema` instead of Laravel's `Schema`, 
-and all your commands will run through `pt-online-schema-change`.
+and all your commands will run through `gh-ost` or `pt-online-schema-change`.
 
 ```php
 <?php
