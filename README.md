@@ -43,7 +43,7 @@ This package support `pt-onlice-schema-change` and `gh-ost`. Below are the confi
             '--max-load=Threads_running=25',
             '--critical-load=Threads_running=1000',
             '--chunk-size=1000',
-            '--throttle-control-replicas="myreplica.1.com,myreplica.2.com"',
+            '--throttle-control-replicas=myreplica.1.com,myreplica.2.com',
             '--max-lag-millis=1500',
             '--verbose',
             '--switch-to-rbr',
