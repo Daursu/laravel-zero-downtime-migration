@@ -3,6 +3,7 @@
 namespace Daursu\ZeroDowntimeMigration\Tests;
 
 use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
 
 class PtOnlineSchemaChangeConnectionTest extends TestCase
@@ -15,7 +16,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->expects($this->once())
             ->method('runProcess')
             ->with($this->callback(function ($command) {
-                return str_contains(implode(' ', $command), 't=users');
+                return Str::contains(implode(' ', $command), 't=users');
             }))
             ->willReturn(0);
 
@@ -30,7 +31,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->expects($this->once())
             ->method('runProcess')
             ->with($this->callback(function ($command) {
-                return str_contains(implode(' ', $command), 't=users');
+                return Str::contains(implode(' ', $command), 't=users');
             }))
             ->willReturn(0);
 
@@ -53,11 +54,11 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
             ->method('runProcess')
             ->with($this->callback(function ($command) {
                 $command = implode(' ', $command);
-                return str_contains($command, 'h=server.example.com')
-                    && str_contains($command, 'P=3306')
-                    && str_contains($command, 'D=zero_downtime')
-                    && str_contains($command, 'u=username')
-                    && str_contains($command, 'p=password');
+                return Str::contains($command, 'h=server.example.com')
+                    && Str::contains($command, 'P=3306')
+                    && Str::contains($command, 'D=zero_downtime')
+                    && Str::contains($command, 'u=username')
+                    && Str::contains($command, 'p=password');
             }))
             ->willReturn(0);
 
@@ -73,7 +74,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
             ->method('runProcess')
             ->with($this->callback(function ($command) {
                 $command = implode(' ', $command);
-                return str_contains($command, '--alter ADD `email` varchar(255)');
+                return Str::contains($command, '--alter ADD `email` varchar(255)');
             }))
             ->willReturn(0);
 
@@ -93,7 +94,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->expects($this->once())
             ->method('runProcess')
             ->with($this->callback(function ($command) {
-                return str_contains(
+                return Str::contains(
                     implode(' ', $command),
                     '--nocheck-replication-filters --nocheck-unique-key-change --alter'
                 );
@@ -113,7 +114,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->expects($this->once())
             ->method('runProcess')
             ->with($this->callback(function ($command) {
-                return str_contains(
+                return Str::contains(
                     implode(' ', $command),
                     '--dry-run'
                 );
