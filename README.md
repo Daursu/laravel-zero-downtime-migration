@@ -4,7 +4,7 @@ Zero downtime migrations with Laravel and `gh-ost` or `pt-online-schema-change`.
 NOTE: works only with MySQL databases, including (Percona & MariaDB).
 
 ## Installation
-Compatible with Laravel `5.5`, `5.6`, `5.7`, `5.8` & `^6.0`
+Compatible with Laravel `5.5`, `5.6`, `5.7`, `5.8`, `^6.0` & `^7.0`
 
 #### Prerequisites
 If you are using `gh-ost` then make sure you download the binary from their releases page:
