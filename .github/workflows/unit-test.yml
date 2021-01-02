@@ -1,0 +1,49 @@
+name: Run unit tests
+
+on:
+  push:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 7.4, 8.0 ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, mbstring, zip, pdo, iconv
+          coverage: none
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Validate composer.json and composer.lock
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer validate
+
+      - name: Install composer.json dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --no-interaction --prefer-dist --no-suggest
+
+      - name: Run test suite
+        run: vendor/bin/phpunit --verbose
