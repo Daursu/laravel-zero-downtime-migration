@@ -21,3 +21,4 @@ Homestead.json
 
 # IDE
 .idea
+.phpunit.result.cache
