@@ -22,7 +22,7 @@ Daursu\ZeroDowntimeMigration\ServiceProvider::class,
 ```
 3. Update your `config/database.php` and add a new connection:
 
-This package support `pt-onlice-schema-change` and `gh-ost`. Below are the configurations for each package:
+This package support `pt-online-schema-change` and `gh-ost`. Below are the configurations for each package:
 
 ###### gh-ost
 ```php
