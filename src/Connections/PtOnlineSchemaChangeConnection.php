@@ -57,9 +57,9 @@ class PtOnlineSchemaChangeConnection extends BaseConnection
     protected function maskSensitiveInformation(array $command): string
     {
         return collect($command)->map(function ($config) {
-            $config = preg_replace('/(p=.*?),/', 'p=*****,', $config);
+            $config = preg_replace('/('.$this->getConfig('password').'),/', '*****,', $config);
 
-            return preg_replace('/(u=.*?),/', 'u=*****,', $config);
+            return preg_replace('/('.$this->getConfig('username').'),/', '*****,', $config);
         })->implode(' ');
     }
 }
