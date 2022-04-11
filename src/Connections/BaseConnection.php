@@ -7,6 +7,7 @@ use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 abstract class BaseConnection extends MySqlConnection
@@ -24,13 +25,23 @@ abstract class BaseConnection extends MySqlConnection
         
         $this->outputCommand($command);
 
-        $process = new Process($command);
+        $process = $this->getProcess($command);
         $process->setTimeout(null);
-        $process->mustRun(function ($type, $buffer) {
-            $this->output($buffer, false);
-        });
+
+        try {
+            $process->mustRun(function ($type, $buffer) {
+                $this->output($buffer, false);
+            });
+        } catch (\Exception $e) {
+            throw new RuntimeException($this->maskSensitiveInformation([$e->getMessage()]));
+        }
 
         return $process->stop();
+    }
+
+    protected function getProcess(array $command): Process
+    {
+        return new Process($command);
     }
 
     /**
@@ -95,7 +106,9 @@ abstract class BaseConnection extends MySqlConnection
      */
     protected function output(string $message, bool $newLine = true)
     {
-        if (Container::getInstance()->runningInConsole()) {
+        $container = Container::getInstance();
+
+        if (method_exists($container, 'runningInConsole') && $container->runningInConsole()) {
             $output = new ConsoleOutput();
             $command = $newLine ? 'writeln' : 'write';
             $output->{$command}(sprintf('<comment>%s</comment>', $message));

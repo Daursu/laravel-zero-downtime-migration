@@ -5,6 +5,8 @@ namespace Daursu\ZeroDowntimeMigration\Tests;
 use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Process\Exception\RuntimeException;
+use Symfony\Component\Process\Process;
 
 class PtOnlineSchemaChangeConnectionTest extends TestCase
 {
@@ -124,9 +126,47 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->statement($query);
     }
 
+    public function testItHidesSensitiveInformationWhenCommandFails()
+    {
+        $query = 'alter table `users` ADD `email` varchar(255)';
+        $process = $this->getMockedProcess();
+        $connection = $this->getMockBuilder(PtOnlineSchemaChangeConnection::class)
+            ->setConstructorArgs([
+                function () {
+                },
+                'test',
+                '',
+                [
+                    'username' => 'hidden',
+                    'password' => 'hidden',
+                ],
+            ])
+            ->setMethods(['getProcess', 'isPretending'])
+            ->getMock();
+
+        $connection->method('getProcess')->willReturn($process);
+        $process->method('stop')->willReturn(1);
+        $expectedException = new RuntimeException('The command "\'pt-online-schema-change\' \'--execute\' \'--nocheck-replication-filters\' \'--nocheck-unique-key-change\' \'--recursion-method=none\' \'--chunk-size=2000\' \'--alter\' \'add `city` varchar(255) null\' \'h=127.0.0.1,P=3306,D=laravel,u=hidden,p=hidden,t=users\'" failed.');
+        $process->method('mustRun')->willThrowException($expectedException);
+
+        try {
+            $connection->statement($query);
+        } catch (RuntimeException $e) {
+            $this->assertStringNotContainsString('hidden', $e->getMessage());
+            $this->assertStringContainsString('*****', $e->getMessage());
+        }
+    }
+
+    private function getMockedProcess() {
+        return $this->getMockBuilder(Process::class)
+            ->setConstructorArgs([[]])
+            ->setMethods(['stop', 'mustRun'])
+            ->getMock();
+    }
+
     private function getConnectionWithMockedProcess(array $config = [])
     {
-        $mock = $this->getMockBuilder(PtOnlineSchemaChangeConnection::class)
+        return $this->getMockBuilder(PtOnlineSchemaChangeConnection::class)
             ->setConstructorArgs([
                 function () {
                 },
@@ -136,7 +176,5 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
             ])
             ->setMethods(['runProcess', 'isPretending'])
             ->getMock();
-
-        return $mock;
     }
 }
