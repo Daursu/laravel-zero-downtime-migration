@@ -4,6 +4,7 @@ namespace Daursu\ZeroDowntimeMigration;
 
 use Daursu\ZeroDowntimeMigration\Connections\GhostConnection;
 use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
+use Daursu\ZeroDowntimeMigration\Connectors\ZeroDowntimeMySqlConnector;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Connectors\MySqlConnector;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
@@ -36,7 +37,7 @@ class ServiceProvider extends IlluminateServiceProvider
         });
 
         $this->app->bind('db.connector.pt-online-schema-change', function () {
-            return new MySqlConnector;
+            return new ZeroDowntimeMySqlConnector;
         });
 
         $this->app->bind('db.connector.gh-ost', function () {
