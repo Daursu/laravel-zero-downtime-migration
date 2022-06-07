@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Daursu\ZeroDowntimeMigration\Connectors;
+namespace LAlexandrov\ZeroDowntimeMigration\Connectors;
 
 use  Illuminate\Database\Connectors\MySqlConnector;
 

@@ -1,30 +1,39 @@
 # laravel-zero-downtime-migration
+
 Zero downtime migrations with Laravel and `gh-ost` or `pt-online-schema-change`.
 
 NOTE: works only with MySQL databases, including (Percona & MariaDB).
 
 ## Installation
+
 Compatible with Laravel `5.5`, `5.6`, `5.7`, `5.8`, `6.0`, `7.0`, `8.0` & `9.0`
 
 #### Prerequisites
+
 If you are using `gh-ost` then make sure you download the binary from their releases page:
-- https://github.com/github/gh-ost/releases
+
+- <https://github.com/github/gh-ost/releases>
 
 If you are using `pt-online-schema-change` then make sure you have `percona-toolkit` installed.
+
 - On Mac you can install it using brew `brew install percona-toolkit`.
-- On Debian/Ubuntu ` apt-get install percona-toolkit`.
+- On Debian/Ubuntu `apt-get install percona-toolkit`.
 
 #### Installation steps
-1. Run `composer require daursu/laravel-zero-downtime-migration`
+
+1. Run `composer require l-alexandrov/laravel-zero-downtime-migration`
 2. (Optional) Add the service provider to your `config/app.php` file, if you are not using autoloading.
+
 ```php
-Daursu\ZeroDowntimeMigration\ServiceProvider::class,
+LAlexandrov\ZeroDowntimeMigration\ServiceProvider::class,
 ```
+
 3. Update your `config/database.php` and add a new connection:
 
 This package support `pt-online-schema-change` and `gh-ost`. Below are the configurations for each package:
 
 ###### gh-ost
+
 ```php
 'connections' => [
     'zero-downtime' => [
@@ -56,6 +65,7 @@ This package support `pt-online-schema-change` and `gh-ost`. Below are the confi
 ```
 
 ###### pt-online-schema-change
+
 ```php
 'connections' => [
     'zero-downtime' => [
@@ -81,7 +91,8 @@ This package support `pt-online-schema-change` and `gh-ost`. Below are the confi
 ```
 
 ## Usage
-When writing a new migration, use the helper facade `ZeroDowntimeSchema` instead of Laravel's `Schema`, 
+
+When writing a new migration, use the helper facade `ZeroDowntimeSchema` instead of Laravel's `Schema`,
 and all your commands will run through `gh-ost` or `pt-online-schema-change`.
 
 ```php
@@ -89,7 +100,7 @@ and all your commands will run through `gh-ost` or `pt-online-schema-change`.
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Daursu\ZeroDowntimeMigration\ZeroDowntimeSchema;
+use LAlexandrov\ZeroDowntimeMigration\ZeroDowntimeSchema;
 
 class AddPhoneNumberToUsersTable extends Migration
 {
@@ -122,9 +133,11 @@ class AddPhoneNumberToUsersTable extends Migration
 Run `php artisan:migrate`
 
 ## Configuration
+
 All the configuration is done inside `config/database.php` on the connection itself.
-You can pass down custom flags to the raw `pt-online-schema-change` command. 
+You can pass down custom flags to the raw `pt-online-schema-change` command.
 Simply add the parameters you want inside the `options` array like so:
+
 ```php
 'options' => [
     '--nocheck-replication-filters',
@@ -135,9 +148,10 @@ Simply add the parameters you want inside the `options` array like so:
 ```
 
 You can find all the possible options here:
-https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html
+<https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html>
 
 ### Tests
+
 The `ZeroDowntimeSchema` facades allows you disable running `pt-online-schema-change` during tests.
 To do so, in your base test case `TestCase.php` under the setUp method add the following:
 
@@ -168,7 +182,8 @@ public function boot()
 ```
 
 ### Replication
-If your database is running in a cluster with replication, then you need to 
+
+If your database is running in a cluster with replication, then you need to
 configure how `pt-online-schema-changes` finds your replica slaves.
 Here's an example setup, but feel free to customize it to your own needs
 
@@ -183,6 +198,7 @@ Here's an example setup, but feel free to customize it to your own needs
 
 1. Replace `database_name` with your database name.
 2. Create a new table called `dsns`
+
 ```mysql
 CREATE TABLE `dsns` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -191,13 +207,16 @@ CREATE TABLE `dsns` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 ```
+
 3. Add a new row for each replica you have, example
+
 ```mysql
 INSERT INTO `dsns` (`id`, `parent_id`, `dsn`)
 VALUES
-	(1, NULL, 'h=my-replica-1.example.org,P=3306');
+ (1, NULL, 'h=my-replica-1.example.org,P=3306');
 ```
 
 ## Gotchas
+
 - This only works with MySQL, Percona & MariaDB
 - Use this tool when you need to alter a table, not when creating or dropping tables.

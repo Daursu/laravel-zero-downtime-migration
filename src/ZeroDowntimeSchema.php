@@ -1,6 +1,6 @@
 <?php
 
-namespace Daursu\ZeroDowntimeMigration;
+namespace LAlexandrov\ZeroDowntimeMigration;
 
 use Illuminate\Support\Facades\Schema;
 

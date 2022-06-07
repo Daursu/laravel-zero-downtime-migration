@@ -1,6 +1,6 @@
 <?php
 
-use Daursu\ZeroDowntimeMigration\Connections\GhostConnection;
+use LAlexandrov\ZeroDowntimeMigration\Connections\GhostConnection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;

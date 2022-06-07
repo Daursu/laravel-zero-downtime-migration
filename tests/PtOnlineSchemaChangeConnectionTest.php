@@ -1,8 +1,8 @@
 <?php
 
-namespace Daursu\ZeroDowntimeMigration\Tests;
+namespace LAlexandrov\ZeroDowntimeMigration\Tests;
 
-use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
+use LAlexandrov\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Exception\RuntimeException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Daursu\ZeroDowntimeMigration\Connections;
+namespace LAlexandrov\ZeroDowntimeMigration\Connections;
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Migrations\Migrator;

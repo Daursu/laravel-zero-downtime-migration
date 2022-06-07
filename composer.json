@@ -1,5 +1,5 @@
 {
-    "name": "daursu/laravel-zero-downtime-migration",
+    "name": "l-alexandrov/laravel-zero-downtime-migration",
     "description": "Zero downtime migrations with Laravel and percona toolkit",
     "require": {
         "php": "^7.0|^8.0|^8.1",
@@ -14,8 +14,11 @@
     },
     "autoload": {
         "psr-4": {
-            "Daursu\\ZeroDowntimeMigration\\": "src"
+            "LAlexandrov\\ZeroDowntimeMigration\\": "src"
         }
+    },
+    "conflict": {
+        "daursu/laravel-zero-downtime-migration": "*"
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
@@ -24,8 +27,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Dan Ursu",
-            "email": "dan@ursu.co.uk"
+            "name": "Lyuboslav Alexandrov",
+            "email": "lyubo@anvilo.com"
         }
     ],
     "minimum-stability": "stable",
@@ -35,7 +38,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Daursu\\ZeroDowntimeMigration\\ServiceProvider"
+                "LAlexandrov\\ZeroDowntimeMigration\\ServiceProvider"
             ]
         }
     }

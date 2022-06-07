@@ -1,10 +1,10 @@
 <?php
 
-namespace Daursu\ZeroDowntimeMigration;
+namespace LAlexandrov\ZeroDowntimeMigration;
 
-use Daursu\ZeroDowntimeMigration\Connections\GhostConnection;
-use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
-use Daursu\ZeroDowntimeMigration\Connectors\ZeroDowntimeMySqlConnector;
+use LAlexandrov\ZeroDowntimeMigration\Connections\GhostConnection;
+use LAlexandrov\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
+use LAlexandrov\ZeroDowntimeMigration\Connectors\ZeroDowntimeMySqlConnector;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Connectors\MySqlConnector;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
