@@ -44,9 +44,9 @@ class GhostConnection extends BaseConnection
     protected function maskSensitiveInformation(array $command): string
     {
         return collect($command)->map(function ($config) {
-            $config = preg_replace('/('.$this->getConfig('password').')/', '*****', $config);
+            $config = preg_replace('/('.preg_quote($this->getConfig('password'), '/').')/', '*****', $config);
 
-            return preg_replace('/('.$this->getConfig('username').')/', '*****', $config);
+            return preg_replace('/('.preg_quote($this->getConfig('username'), '/').')/', '*****', $config);
         })->implode(' ');
     }
 }
