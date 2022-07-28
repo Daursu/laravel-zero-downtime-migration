@@ -6,6 +6,7 @@ use Illuminate\Container\Container;
 use Illuminate\Database\Migrations\Migrator;
 use Illuminate\Database\MySqlConnection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
@@ -124,5 +125,15 @@ abstract class BaseConnection extends MySqlConnection
     protected function maskSensitiveInformation(array $command): string
     {
         return collect($command)->implode(' ');
+    }
+
+    /**
+     * Get the Doctrine DBAL database connection instance.
+     *
+     * @return \Doctrine\DBAL\Connection
+     */
+    public function getDoctrineConnection()
+    {
+        return DB::connection()->getDoctrineConnection();
     }
 }
