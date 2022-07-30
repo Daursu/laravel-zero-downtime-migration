@@ -130,6 +130,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
     {
         $query = 'alter table `users` ADD `email` varchar(255)';
         $process = $this->getMockedProcess();
+        $password = 'regex./\\+*?[^]$)(}special{=!><|:-#\'"characters';
         $connection = $this->getMockBuilder(PtOnlineSchemaChangeConnection::class)
             ->setConstructorArgs([
                 function () {
@@ -138,7 +139,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
                 '',
                 [
                     'username' => 'hidden',
-                    'password' => 'hidden',
+                    'password' => $password,
                 ],
             ])
             ->setMethods(['getProcess', 'isPretending'])
@@ -146,13 +147,14 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
 
         $connection->method('getProcess')->willReturn($process);
         $process->method('stop')->willReturn(1);
-        $expectedException = new RuntimeException('The command "\'pt-online-schema-change\' \'--execute\' \'--nocheck-replication-filters\' \'--nocheck-unique-key-change\' \'--recursion-method=none\' \'--chunk-size=2000\' \'--alter\' \'add `city` varchar(255) null\' \'h=127.0.0.1,P=3306,D=laravel,u=hidden,p=hidden,t=users\'" failed.');
+        $expectedException = new RuntimeException("The command \"'pt-online-schema-change' '--execute' '--nocheck-replication-filters' '--nocheck-unique-key-change' '--recursion-method=none' '--chunk-size=2000' '--alter' 'add `city` varchar(255) null' 'h=127.0.0.1,P=3306,D=laravel,u=hidden,p=$password,t=users'\" failed.");
         $process->method('mustRun')->willThrowException($expectedException);
 
         try {
             $connection->statement($query);
         } catch (RuntimeException $e) {
             $this->assertStringNotContainsString('hidden', $e->getMessage());
+            $this->assertStringNotContainsString($password, $e->getMessage());
             $this->assertStringContainsString('*****', $e->getMessage());
         }
     }
