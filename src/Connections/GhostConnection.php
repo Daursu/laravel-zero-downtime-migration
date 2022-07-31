@@ -2,8 +2,6 @@
 
 namespace Daursu\ZeroDowntimeMigration\Connections;
 
-use Illuminate\Support\Arr;
-
 class GhostConnection extends BaseConnection
 {
     /**
@@ -21,7 +19,7 @@ class GhostConnection extends BaseConnection
             [
                 'gh-ost',
             ],
-            Arr::get($this->config, 'options', []),
+            $this->getAdditionalParameters(),
             [
                 sprintf('--user=%s', $this->getConfig('username')),
                 sprintf('--password=%s', $this->getConfig('password')),

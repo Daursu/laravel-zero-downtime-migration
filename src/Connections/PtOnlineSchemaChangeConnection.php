@@ -2,8 +2,6 @@
 
 namespace Daursu\ZeroDowntimeMigration\Connections;
 
-use Illuminate\Support\Arr;
-
 class PtOnlineSchemaChangeConnection extends BaseConnection
 {
     /**
@@ -22,7 +20,7 @@ class PtOnlineSchemaChangeConnection extends BaseConnection
                 'pt-online-schema-change',
                 $this->isPretending() ? '--dry-run' : '--execute',
             ],
-            Arr::get($this->config, 'options', []),
+            $this->getAdditionalParameters(),
             [
                 '--alter',
                 $this->cleanQuery($query),

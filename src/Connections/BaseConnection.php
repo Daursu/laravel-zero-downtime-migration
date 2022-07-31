@@ -125,4 +125,25 @@ abstract class BaseConnection extends MySqlConnection
     {
         return collect($command)->implode(' ');
     }
+
+    /**
+     * Returns additional parameters to be passed down to the command
+     * running the migration against the database.
+     *
+     * @return array
+     */
+    protected function getAdditionalParameters(): array
+    {
+        // Check for breaking changes and display a warning
+        if (collect(Arr::get($this->config, 'options', []))->contains(function ($value) {
+            return str_starts_with($value, '--');
+        }))
+        {
+            $this->output('[Warning] Detected additional parameters passed under "options" array.'
+            .' This has been migrated to "params" array in v1, please check the laravel-zero-downtime-migration'
+            .' upgrade documentation.');
+        }
+
+        return Arr::get($this->config, 'params', []);
+    }
 }
