@@ -87,7 +87,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
     {
         $query = 'alter table `users` ADD `email` varchar(255)';
         $connection = $this->getConnectionWithMockedProcess([
-            'options' => [
+            'params' => [
                 '--nocheck-replication-filters',
                 '--nocheck-unique-key-change',
             ]

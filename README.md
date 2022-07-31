@@ -39,7 +39,7 @@ This package support `pt-online-schema-change` and `gh-ost`. Below are the confi
         
         // Additional options, depending on your setup
         // all options available here: https://github.com/github/gh-ost/blob/master/doc/cheatsheet.md
-        'options' => [
+        'params' => [
             '--max-load=Threads_running=25',
             '--critical-load=Threads_running=1000',
             '--chunk-size=1000',
@@ -70,7 +70,7 @@ This package support `pt-online-schema-change` and `gh-ost`. Below are the confi
         
         // Additional options, depending on your setup
         // all options available here: https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html
-        'options' => [
+        'params' => [
             '--nocheck-replication-filters',
             '--nocheck-unique-key-change',
             '--recursion-method=none',
@@ -124,9 +124,9 @@ Run `php artisan:migrate`
 ## Configuration
 All the configuration is done inside `config/database.php` on the connection itself.
 You can pass down custom flags to the raw `pt-online-schema-change` command. 
-Simply add the parameters you want inside the `options` array like so:
+Simply add the parameters you want inside the `params` array like so:
 ```php
-'options' => [
+'params' => [
     '--nocheck-replication-filters',
     '--nocheck-unique-key-change',
     '--recursion-method=none',
@@ -173,7 +173,7 @@ configure how `pt-online-schema-changes` finds your replica slaves.
 Here's an example setup, but feel free to customize it to your own needs
 
 ```php
-'options' => [
+'params' => [
     '--nocheck-replication-filters',
     '--nocheck-unique-key-change',
     '--recursion-method=dsn=D=database_name,t=dsns',
@@ -196,6 +196,31 @@ CREATE TABLE `dsns` (
 INSERT INTO `dsns` (`id`, `parent_id`, `dsn`)
 VALUES
 	(1, NULL, 'h=my-replica-1.example.org,P=3306');
+```
+
+### Upgrade to v1
+There is one breaking change introduced in v1, that requires to modify
+the configuration in `database.php`. The additional parameters array passed down to
+`pt-online-schema-change` or `gh-ost` has been renamed from `options` to `params`.
+This change was required as the name `options` conflicts with Laravel's database configuration
+that is automatically passed down to PDO.
+
+```php
+// Before
+'options' => [
+    '--nocheck-replication-filters',
+    '--nocheck-unique-key-change',
+    '--recursion-method=none',
+    '--chunk-size=2000',
+]
+
+// After
+'params' => [
+    '--nocheck-replication-filters',
+    '--nocheck-unique-key-change',
+    '--recursion-method=none',
+    '--chunk-size=2000',
+]
 ```
 
 ## Gotchas
