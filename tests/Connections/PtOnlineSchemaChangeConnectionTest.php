@@ -1,12 +1,12 @@
 <?php
 
-namespace Daursu\ZeroDowntimeMigration\Tests;
+namespace Tests\Connections;
 
 use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
 use Illuminate\Support\Str;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
+use Tests\TestCase;
 
 class PtOnlineSchemaChangeConnectionTest extends TestCase
 {

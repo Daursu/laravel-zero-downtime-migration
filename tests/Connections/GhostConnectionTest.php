@@ -1,9 +1,11 @@
 <?php
 
+namespace Tests\Connections;
+
 use Daursu\ZeroDowntimeMigration\Connections\GhostConnection;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
+use Tests\TestCase;
 
 class GhostConnectionTest extends TestCase
 {
