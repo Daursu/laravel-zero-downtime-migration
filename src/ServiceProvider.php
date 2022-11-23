@@ -17,7 +17,8 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     public function boot()
     {
-        //
+        $configPath = __DIR__ . '/../config/zero-down.php';
+        $this->publishes([$configPath => config_path('zero-down.php')], 'config');
     }
 
     /**
@@ -27,6 +28,9 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     public function register()
     {
+        $configPath = __DIR__ . '/../config/zero-down.php';
+        $this->mergeConfigFrom($configPath, 'zero-down');
+
         Connection::resolverFor('pt-online-schema-change', function ($connection, $database, $prefix, $config) {
             return new PtOnlineSchemaChangeConnection($connection, $database, $prefix, $config);
         });
