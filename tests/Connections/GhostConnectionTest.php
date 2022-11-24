@@ -42,10 +42,45 @@ class GhostConnectionTest extends TestCase
         }
     }
 
-    private function getMockedProcess() {
+    public function testItServesOverSocketWithVia()
+    {
+        $process = $this->getMockBuilder(Process::class)
+            ->setConstructorArgs([[]])
+            ->onlyMethods(['stop'])
+            ->getMock();
+
+        $process->method('stop')->willReturn(0);
+
+        $connection = $this->getMockBuilder(GhostConnection::class)
+            ->setConstructorArgs([
+                function () {
+                },
+                'test',
+                '',
+                [
+                    'username' => 'hidden',
+                    'password' => 'test',
+                ],
+            ])
+            ->onlyMethods(['getProcess', 'isPretending'])
+            ->getMock();
+
+        $connection
+            ->expects($this->once())
+            ->method('getProcess')
+            ->with($this->callback(function ($subject) {
+                return in_array('--serve-socket-file=/tmp/gh-ost.zero-down.sock', $subject);
+            }))
+            ->willReturn($process);
+
+        $connection->statement('alter table `users` ADD `email` varchar(255)');
+    }
+
+    private function getMockedProcess()
+    {
         return $this->getMockBuilder(Process::class)
             ->setConstructorArgs([[]])
-            ->setMethods(['stop', 'mustRun'])
+            ->addMethods(['stop', 'mustRun'])
             ->getMock();
     }
 }
