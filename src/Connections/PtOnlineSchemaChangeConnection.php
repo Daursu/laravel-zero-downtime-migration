@@ -13,20 +13,22 @@ class PtOnlineSchemaChangeConnection extends BaseConnection
      */
     public function statement($query, $bindings = [])
     {
-        $table = $this->extractTableFromQuery($query);
+        return $this->runQueries([$query]);
+    }
 
-        return $this->runProcess(array_merge(
-            [
-                'pt-online-schema-change',
-                $this->isPretending() ? '--dry-run' : '--execute',
-            ],
-            $this->getAdditionalParameters(),
-            [
-                '--alter',
-                $this->cleanQuery($query),
-                $this->getAuthString($table),
-            ]
-        ));
+    /**
+     * A custom connection method called by our custom schema builder to help batch
+     * operations on the cloned table.
+     *
+     * @see \Daursu\ZeroDowntimeMigration\BatchableBlueprint
+     *
+     * @param string $query
+     * @param array $bindings
+     * @return bool|int
+     */
+    public function statements($queries, $bindings = [])
+    {
+        return $this->runQueries($queries);
     }
 
     /**
@@ -59,5 +61,32 @@ class PtOnlineSchemaChangeConnection extends BaseConnection
 
             return preg_replace('/('.preg_quote($this->getConfig('username'), '/').'),/', '*****,', $config);
         })->implode(' ');
+    }
+
+    /**
+     * @param string[] $queries
+     * @return bool|int
+     */
+    protected function runQueries($queries)
+    {
+        $table = $this->extractTableFromQuery($queries[0]);
+
+        $cleanQueries = [];
+        foreach($queries as $query) {
+            $cleanQueries[] = $this->cleanQuery($query);
+        }
+
+        return $this->runProcess(array_merge(
+            [
+                'pt-online-schema-change',
+                $this->isPretending() ? '--dry-run' : '--execute',
+            ],
+            $this->getAdditionalParameters(),
+            [
+                '--alter',
+                implode(', ', $cleanQueries),
+                $this->getAuthString($table),
+            ]
+        ));
     }
 }

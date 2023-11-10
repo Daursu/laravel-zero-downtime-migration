@@ -83,6 +83,26 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         $connection->statement($query);
     }
 
+    public function testItConcatenatesMultipleStatements()
+    {
+        $queries = [
+            "alter table `users` add `middle_name` varchar(255)",
+            "alter table `users` drop foreign key `created_by_foreign`",
+        ];
+        $connection = $this->getConnectionWithMockedProcess();
+
+        $connection->expects($this->once())
+            ->method('runProcess')
+            ->with($this->callback(function ($command) {
+                $command = implode(' ', $command);
+                return Str::contains($command, '--alter add `middle_name` varchar(255), '.
+                    'drop foreign key `created_by_foreign`');
+            }))
+            ->willReturn(0);
+
+        $connection->statements($queries);
+    }
+
     public function testAdditionalOptionsAreLoadedIn()
     {
         $query = 'alter table `users` ADD `email` varchar(255)';
