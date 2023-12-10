@@ -1,0 +1,78 @@
+name: Laravel tests
+
+on:
+  push:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  linux_tests:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 8.0, 8.1, 8.2, 8.3 ]
+        laravel: [ 8, 9, 10 ]
+        exclude:
+          - php: 8.0
+            laravel: 10
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: laravel
+        ports:
+          - 33306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    name: Laravel ${{ matrix.laravel }} - PHP ${{ matrix.php }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update APT repository
+        run: sudo apt-get update -y
+
+      - name: Install percona toolkit
+        run: sudo apt-get install -y percona-toolkit
+
+      - name: Install gh-ost
+        run: sudo curl -L -O https://github.com/github/gh-ost/releases/download/v1.1.6/gh-ost-binary-linux-amd64-20231207144046.tar.gz && tar -zxf gh-ost-binary-linux-amd64-20231207144046.tar.gz && chmod +x gh-ost && sudo mv gh-ost /usr/local/bin
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd, igbinary, msgpack, lzf, zstd, lz4, gmp
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: none
+
+      - name: Set Laravel version
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer require illuminate/database:^${{ matrix.laravel }} --no-interaction --no-update
+
+      - name: Install dependencies
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run tests
+        run: vendor/bin/phpunit --testsuite=Integration
+        env:
+          DB_PORT: ${{ job.services.mysql.ports[3306] }}
+          DB_USERNAME: root

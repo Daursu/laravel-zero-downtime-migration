@@ -17,8 +17,11 @@
     </include>
   </coverage>
   <testsuites>
-    <testsuite name="Laravel Zero Downtime Migration">
-      <directory>tests</directory>
+    <testsuite name="Unit">
+      <directory>tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Integration">
+      <directory>tests/Integration</directory>
     </testsuite>
   </testsuites>
   <php>

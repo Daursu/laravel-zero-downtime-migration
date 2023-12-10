@@ -1,6 +1,6 @@
 <?php
 
-namespace Daursu\ZeroDowntimeMigration\Tests;
+namespace Unit;
 
 use Daursu\ZeroDowntimeMigration\Connections\PtOnlineSchemaChangeConnection;
 use Illuminate\Support\Str;
@@ -159,7 +159,8 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
         }
     }
 
-    private function getMockedProcess() {
+    private function getMockedProcess()
+    {
         return $this->getMockBuilder(Process::class)
             ->setConstructorArgs([[]])
             ->setMethods(['stop', 'mustRun'])

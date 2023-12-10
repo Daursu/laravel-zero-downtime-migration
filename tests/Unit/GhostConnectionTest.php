@@ -1,5 +1,7 @@
 <?php
 
+namespace Unit;
+
 use Daursu\ZeroDowntimeMigration\Connections\GhostConnection;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Process\Exception\RuntimeException;
@@ -40,7 +42,8 @@ class GhostConnectionTest extends TestCase
         }
     }
 
-    private function getMockedProcess() {
+    private function getMockedProcess()
+    {
         return $this->getMockBuilder(Process::class)
             ->setConstructorArgs([[]])
             ->setMethods(['stop', 'mustRun'])
