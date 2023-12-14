@@ -46,15 +46,7 @@ class ServiceProvider extends IlluminateServiceProvider
         });
 
         $this->app->bind(Blueprint::class, function ($app, $args = []) {
-            return $this->createInstance(BatchableBlueprint::class, $args);
+            return new BatchableBlueprint(...$args);
         });
-    }
-
-    private function createInstance(string $class, array $args)
-    {
-        return call_user_func_array(
-            [new ReflectionClass($class), 'newInstance'],
-            $args
-        );
     }
 }
