@@ -22,11 +22,10 @@ class PtOnlineSchemaChangeConnection extends BaseConnection
      *
      * @see \Daursu\ZeroDowntimeMigration\BatchableBlueprint
      *
-     * @param string $query
-     * @param array $bindings
+     * @param string[] $queries
      * @return bool|int
      */
-    public function statements($queries, $bindings = [])
+    public function statements($queries)
     {
         return $this->runQueries($queries);
     }
