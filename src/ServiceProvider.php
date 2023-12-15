@@ -19,7 +19,14 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     public function boot()
     {
-        //
+        $this->mergeConfigFrom(
+            __DIR__ . '/config/zero-downtime-migrations.php',
+            'zero-downtime-migrations'
+        );
+
+        $this->publishes([
+            __DIR__ . '/config/zero-downtime-migrations.php' => config_path('zero-downtime-migrations.php'),
+        ]);
     }
 
     /**

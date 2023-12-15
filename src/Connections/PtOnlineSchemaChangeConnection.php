@@ -2,6 +2,9 @@
 
 namespace Daursu\ZeroDowntimeMigration\Connections;
 
+use Daursu\ZeroDowntimeMigration\Transformers\DatabaseTransformer;
+use Illuminate\Support\Collection;
+
 class PtOnlineSchemaChangeConnection extends BaseConnection
 {
     /**
@@ -70,23 +73,48 @@ class PtOnlineSchemaChangeConnection extends BaseConnection
     protected function runQueries($queries)
     {
         $table = $this->extractTableFromQuery($queries[0]);
+        $cleanQueries = $this->applyTransformers($table, $queries);
 
-        $cleanQueries = [];
-        foreach($queries as $query) {
-            $cleanQueries[] = $this->cleanQuery($query);
+        $runCommand = $this->makeCommand($table, $cleanQueries, $this->isPretending());
+        return $this->runProcess($runCommand);
+    }
+
+    /**
+     * @return array<string>
+     */
+    protected function makeCommand(string $table, Collection $queries, bool $dryRun = false): array
+    {
+        // array_filter to strip empty lines from `getAdditionalParameters`
+        return array_filter(array_merge(
+            ['pt-online-schema-change', $dryRun ? '--dry-run' : '--execute'],
+            $this->getAdditionalParameters(),
+            ['--alter', $queries->join(', '), $this->getAuthString($table)]
+        ));
+    }
+
+    /**
+     * @return Collection<string>
+     */
+    protected function applyTransformers(string $tableName, array $queries): Collection
+    {
+        $cleanQueries = collect($queries)->map(fn (string $query) => $this->cleanQuery($query));
+        $dryRunCommand = $this->makeCommand($tableName, $cleanQueries, true);
+
+        foreach ($this->getDatabaseTransformers() as $transformer) {
+            $transformer->transformState($tableName, $cleanQueries, $dryRunCommand);
+            $cleanQueries = $transformer->transformQueries($tableName, $cleanQueries, $dryRunCommand);
         }
 
-        return $this->runProcess(array_merge(
-            [
-                'pt-online-schema-change',
-                $this->isPretending() ? '--dry-run' : '--execute',
-            ],
-            $this->getAdditionalParameters(),
-            [
-                '--alter',
-                implode(', ', $cleanQueries),
-                $this->getAuthString($table),
-            ]
-        ));
+        return $cleanQueries;
+    }
+
+    /**
+     * @return Collection<DatabaseTransformer>
+     */
+    protected function getDatabaseTransformers(): Collection
+    {
+        $trasnformerClasses = config('zero-downtime-migrations.transformers');
+
+        return collect($trasnformerClasses)->map(fn (string $className) => new $className());
     }
 }
