@@ -3,7 +3,10 @@ name: Run unit tests
 on:
   push:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 defaults:
   run:
@@ -11,12 +14,12 @@ defaults:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.0, 8.1, 8.2 ]
+        php: [8.0, 8.1, 8.2]
 
     steps:
       - uses: actions/checkout@v2
@@ -38,11 +41,11 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Validate composer.json and composer.lock
-        if: steps.composer-cache.outputs.cache-hit != 'true'
+        if: "steps.composer-cache.outputs.cache-hit != 'true'"
         run: composer validate
 
       - name: Install composer.json dependencies
-        if: steps.composer-cache.outputs.cache-hit != 'true'
+        if: "steps.composer-cache.outputs.cache-hit != 'true'"
         run: composer install --no-interaction --prefer-dist --no-suggest
 
       - name: Run test suite
