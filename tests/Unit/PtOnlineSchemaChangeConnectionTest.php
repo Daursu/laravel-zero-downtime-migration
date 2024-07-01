@@ -162,7 +162,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
                     'password' => $password,
                 ],
             ])
-            ->setMethods(['getProcess', 'isPretending'])
+            ->onlyMethods(['getProcess', 'isPretending'])
             ->getMock();
 
         $connection->method('getProcess')->willReturn($process);
@@ -183,7 +183,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
     {
         return $this->getMockBuilder(Process::class)
             ->setConstructorArgs([[]])
-            ->setMethods(['stop', 'mustRun'])
+            ->onlyMethods(['stop', 'mustRun'])
             ->getMock();
     }
 
@@ -197,7 +197,7 @@ class PtOnlineSchemaChangeConnectionTest extends TestCase
                 '',
                 $config,
             ])
-            ->setMethods(['runProcess', 'isPretending'])
+            ->onlyMethods(['runProcess', 'isPretending'])
             ->getMock();
     }
 }
