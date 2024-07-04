@@ -25,7 +25,7 @@ class GhostConnectionTest extends TestCase
                     'password' => $password,
                 ],
             ])
-            ->setMethods(['getProcess', 'isPretending'])
+            ->onlyMethods(['getProcess', 'isPretending'])
             ->getMock();
 
         $connection->method('getProcess')->willReturn($process);
@@ -46,7 +46,7 @@ class GhostConnectionTest extends TestCase
     {
         return $this->getMockBuilder(Process::class)
             ->setConstructorArgs([[]])
-            ->setMethods(['stop', 'mustRun'])
+            ->onlyMethods(['stop', 'mustRun'])
             ->getMock();
     }
 }
