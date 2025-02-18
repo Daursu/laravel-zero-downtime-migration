@@ -3,7 +3,10 @@ name: Laravel tests
 on:
   push:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 defaults:
   run:
@@ -12,11 +15,12 @@ defaults:
 jobs:
   linux_tests:
     runs-on: ubuntu-22.04
+
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.0, 8.1, 8.2, 8.3 ]
-        laravel: [ 8, 9, 10, 11 ]
+        php: [8.0, 8.1, 8.2, 8.3]
+        laravel: [8, 9, 10, 11, '12']
         exclude:
           - php: 8.0
             laravel: 10
@@ -24,6 +28,10 @@ jobs:
             laravel: 11
           - php: 8.1
             laravel: 11
+          - laravel: '12'
+            php: 8.0
+          - laravel: '12'
+            php: 8.1
 
     services:
       mysql:
