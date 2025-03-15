@@ -16,10 +16,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        php: [ 8.0, 8.1, 8.2 ]
+        php: [ 8.2, 8.3, 8.4 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -30,7 +30,7 @@ jobs:
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -46,4 +46,4 @@ jobs:
         run: composer install --no-interaction --prefer-dist --no-suggest
 
       - name: Run test suite
-        run: vendor/bin/phpunit --verbose --testsuite=Unit
+        run: vendor/bin/phpunit --testsuite=Unit
