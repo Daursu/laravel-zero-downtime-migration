@@ -3,8 +3,6 @@
 namespace Daursu\ZeroDowntimeMigration;
 
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Connection;
-use Illuminate\Database\Schema\Grammars\Grammar;
 
 /**
  * A variant of `Blueprint` that allows for connection types to define a `statements`
@@ -13,13 +11,13 @@ use Illuminate\Database\Schema\Grammars\Grammar;
  */
 class BatchableBlueprint extends Blueprint
 {
-    public function build(Connection $connection, Grammar $grammar)
+    public function build()
     {
-        if (method_exists($connection, 'statements')) {
-            $statements = $this->toSql($connection, $grammar);
-            return !empty($statements) ? $connection->statements($statements) : null;
+        if (method_exists($this->connection, 'statements')) {
+            $statements = $this->toSql();
+            return !empty($statements) ? $this->connection->statements($statements) : null;
         }
 
-        return parent::build($connection, $grammar);
+        return parent::build();
     }
 }
